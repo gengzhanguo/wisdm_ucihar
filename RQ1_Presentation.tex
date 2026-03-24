@@ -140,21 +140,15 @@
   \end{tabularx}
   \end{center}
 
-  \vspace{2mm}
+  \vspace{3mm}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \centering
-      \begin{tikzpicture}
-        \fill[wisdmOrange!20, rounded corners=3pt] (0,0) rectangle (5.2,0.7);
-        \node[anchor=west] at (0.1, 0.35) {\small \textbf{WISDM:} Walking 38.5\% $\cdot$ \textbf{Jogging 31.0\%} $\cdot$ other 30.5\%};
-      \end{tikzpicture}
+      \colorbox{wisdmOrange!20}{\parbox{0.97\linewidth}{\small
+        \textbf{WISDM:} Walk 38.5\% ~$\cdot$~ \textbf{Jog 31.0\%} ~$\cdot$~ other 30.5\%}}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \centering
-      \begin{tikzpicture}
-        \fill[uciBlue!20, rounded corners=3pt] (0,0) rectangle (5.2,0.7);
-        \node[anchor=west] at (0.1, 0.35) {\small \textbf{UCI HAR:} Sit 21.3\% $\cdot$ Stand 22.8\% $\cdot$ Walk 20.6\% $\cdot$ other 35.3\%};
-      \end{tikzpicture}
+      \colorbox{uciBlue!20}{\parbox{0.97\linewidth}{\small
+        \textbf{UCI HAR:} Sit 21.3\% ~$\cdot$~ Stand 22.8\% ~$\cdot$~ Walk 20.6\% ~$\cdot$~ other}}
     \end{column}
   \end{columns}
 \end{frame}
@@ -200,50 +194,47 @@
 %% ============================================================
 
 \begin{frame}{Methodology Pipeline}
+  \vspace{-1mm}
   \begin{center}
-  \begin{tikzpicture}[
-      box/.style={draw, rounded corners=4pt, fill=blue!8, minimum width=2.6cm,
-                  minimum height=0.8cm, font=\small, align=center},
-      arrow/.style={->, thick, color=darkRed}
-    ]
-    \node[box] (raw)   at (0,0)   {Raw Data\\WISDM + UCI};
-    \node[box] (align) at (3.2,0) {Physical\\Alignment};
-    \node[box] (feat)  at (6.4,0) {Feature\\Extraction};
-    \node[box] (dist)  at (9.6,0) {Distribution\\Fitting (KDE)};
-    \node[box] (metr)  at (12.8,0){Distance\\Metrics};
-
-    \draw[arrow] (raw)   -- (align);
-    \draw[arrow] (align) -- (feat);
-    \draw[arrow] (feat)  -- (dist);
-    \draw[arrow] (dist)  -- (metr);
-
-    \node[font=\footnotesize, text=noteGray, align=center] at (1.6,-0.85)
-      {Resample 50$\to$20 Hz\\$\times$9.80665 m/s²\\51-sample windows};
-    \node[font=\footnotesize, text=noteGray, align=center] at (4.8,-0.85)
-      {$Acc_{mag}$\\Freq.\ Centroid};
-    \node[font=\footnotesize, text=noteGray, align=center] at (8.0,-0.85)
-      {Gaussian KDE\\per axis / class};
-    \node[font=\footnotesize, text=noteGray, align=center] at (11.2,-0.85)
-      {Wasserstein\\KL Div.\ · MMD · TVD};
-  \end{tikzpicture}
+  \small
+  \begin{tabular}{ccccccccc}
+    \colorbox{blue!10}{\parbox{1.7cm}{\centering\scriptsize Raw Data\\WISDM+UCI}} &
+    \textbf{$\to$} &
+    \colorbox{blue!10}{\parbox{1.7cm}{\centering\scriptsize Physical\\Alignment}} &
+    \textbf{$\to$} &
+    \colorbox{blue!10}{\parbox{1.7cm}{\centering\scriptsize Feature\\Extraction}} &
+    \textbf{$\to$} &
+    \colorbox{blue!10}{\parbox{1.7cm}{\centering\scriptsize KDE\\Fitting}} &
+    \textbf{$\to$} &
+    \colorbox{blue!10}{\parbox{1.7cm}{\centering\scriptsize Distance\\Metrics}} \\[3pt]
+    & &
+    \textcolor{noteGray}{\scriptsize 50$\to$20 Hz} & &
+    \textcolor{noteGray}{\scriptsize $Acc_{mag}$, $f_c$} & &
+    \textcolor{noteGray}{\scriptsize per axis} & &
+    \textcolor{noteGray}{\scriptsize Wass/KL/MMD} \\
+  \end{tabular}
   \end{center}
 
   \vspace{3mm}
   \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \textbf{Two extracted features per window:}
+    \begin{column}{0.50\textwidth}
+      \textbf{Two physics-motivated features per window:}
+      \vspace{1mm}
       \begin{itemize}
-        \item \textbf{Acc Magnitude}: $Acc_{mag}(t) = \sqrt{x^2 + y^2 + z^2}$
-        \item \textbf{Frequency Centroid}: $f_c = \frac{\sum f_i \cdot P(f_i)}{\sum P(f_i)}$
+        \item \textbf{Acc Magnitude:}
+          $\;Acc_{mag}(t) = \sqrt{x^2 + y^2 + z^2}$
+        \item \textbf{Frequency Centroid:}
+          $\;f_c = \dfrac{\sum f_i \cdot P(f_i)}{\sum P(f_i)}$
       \end{itemize}
     \end{column}
-    \begin{column}{0.48\textwidth}
+    \begin{column}{0.46\textwidth}
       \textbf{Four distance metrics:}
+      \vspace{1mm}
       \begin{itemize}
-        \item Wasserstein-1 (EMD) — transport cost
-        \item Symmetric KL Divergence — overlap
-        \item Multi-kernel MMD — feature-space shift
-        \item Total Variation Distance — prior shift
+        \item \textbf{Wasserstein-1} — physical transport cost
+        \item \textbf{Sym.\ KL Divergence} — distributional overlap
+        \item \textbf{Multi-kernel MMD} — feature-space shift
+        \item \textbf{Total Variation Distance} — prior $P(Y)$
       \end{itemize}
     \end{column}
   \end{columns}
@@ -285,18 +276,15 @@
 
 \begin{frame}{Results III — Gravity Component \& Preprocessing Gap}
   \begin{center}
-    \includegraphics[width=0.90\textwidth, height=0.68\textheight, keepaspectratio]
+    \includegraphics[width=0.88\textwidth, height=0.63\textheight, keepaspectratio]
       {gravity_bias_analysis.png}
   \end{center}
-  \vspace{-2mm}
-  \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
-      \small \textbf{Row 1:} Gravity concentrates on \textbf{X} in UCI (+8.58), on \textbf{Y} in WISDM (+6.51) — sensor orientations near-orthogonal
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \small \textbf{Row 2:} Dynamic std \textbf{3--5$\times$ higher} in WISDM; UCI applied Butterworth gravity separation
-    \end{column}
-  \end{columns}
+  \vspace{1mm}
+  \begin{center}
+    \small
+    \textbf{Row 1:} Gravity on \textbf{X} in UCI (+8.58 m/s²) vs.\ \textbf{Y} in WISDM (+6.51 m/s²) — near-orthogonal sensor orientation \quad
+    \textbf{Row 2:} Dynamic std \textbf{3--5$\times$ higher} in WISDM (free pocket vs.\ fixed waist)
+  \end{center}
 \end{frame}
 
 \begin{frame}{Results IV — Class Prior Shift $P(Y)$}
@@ -306,30 +294,33 @@
   \end{center}
   \vspace{-2mm}
   \begin{center}
-    \small Total Variation Distance $\mathbf{TVD = 0.489}$ \quad
-    Jogging: $\Delta P = 31.0\%$ \quad Standing: $\Delta P = 18.4\%$ \quad Walking: $\Delta P = 17.9\%$
+    \small Total Variation Distance $\mathbf{TVD = 0.489}$\\[1pt]
+    Jogging $\Delta P = 31.0\%$ ~·~ Standing $\Delta P = 18.4\%$ ~·~ Walking $\Delta P = 17.9\%$
   \end{center}
 \end{frame}
 
-\begin{frame}{Results V — Per-Class Covariate Shift}
-  \begin{columns}[T]
-    \begin{column}{0.50\textwidth}
-      \centering
-      \includegraphics[width=\textwidth, height=0.68\textheight, keepaspectratio]
-        {amplitude_dist_metrics.png}
-      \\\small Acc Magnitude per class
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \centering
-      \includegraphics[width=\textwidth, height=0.68\textheight, keepaspectratio]
-        {freq_centroid_dist_metrics.png}
-      \\\small Frequency Centroid per class
-    \end{column}
-  \end{columns}
-  \vspace{1mm}
+\begin{frame}{Results V-a — Per-Class Covariate Shift: Acc Magnitude}
   \begin{center}
-    \small \textbf{Walking} has the largest per-class shift (Wass = 1.15 m/s²) \quad
-    \textbf{Sitting/Standing} nearly aligned across datasets
+    \includegraphics[width=0.88\textwidth, height=0.70\textheight, keepaspectratio]
+      {amplitude_dist_metrics.png}
+  \end{center}
+  \vspace{-2mm}
+  \begin{center}
+    \small Left: KDE with per-class curves \quad Right: per-class Wasserstein bar chart\\
+    \textbf{Walking} dominates (Wass = 1.15 m/s²) \quad
+    \textbf{Sitting / Standing} are nearly aligned across datasets
+  \end{center}
+\end{frame}
+
+\begin{frame}{Results V-b — Per-Class Covariate Shift: Frequency Centroid}
+  \begin{center}
+    \includegraphics[width=0.88\textwidth, height=0.70\textheight, keepaspectratio]
+      {freq_centroid_dist_metrics.png}
+  \end{center}
+  \vspace{-2mm}
+  \begin{center}
+    \small Dynamic activities (Walk 0.22 Hz, Upstairs 0.16 Hz) show significant frequency shift\\
+    Static activities (Sitting 0.001 Hz, Standing 0.002 Hz) are nearly \textbf{identical} across datasets
   \end{center}
 \end{frame}
 
@@ -466,26 +457,27 @@
 
 \begin{frame}{Recommended Metrics for Cross-Dataset HAR Shift}
   \begin{center}
-  \small
-  \begin{tabularx}{0.92\textwidth}{llX}
+  \footnotesize
+  \begin{tabularx}{0.93\textwidth}{llX}
     \toprule
     \textbf{Metric} & \textbf{Captures} & \textbf{When to Use} \\
     \midrule
-    \textbf{Per-axis Wasserstein} & Orientation shift & \textbf{Primary metric} — do not use scalar only \\
-    Scalar Wasserstein (Acc Mag)  & Magnitude shift   & For comparison with prior literature \\
+    \textbf{Per-axis Wasserstein} & Orientation shift & \textbf{Primary} — never use scalar alone \\
+    Scalar Wasserstein (Acc Mag)  & Magnitude shift   & Comparison with prior literature \\
     Symmetric KL Divergence       & Distributional overlap & Tail sensitivity, shape differences \\
-    Multi-kernel MMD              & Global feature-space & Adaptation readiness assessment \\
+    Multi-kernel MMD              & Global feature-space & Domain adaptation readiness \\
     Total Variation Distance      & Prior $P(Y)$ shift & Mandatory for imbalanced datasets \\
-    Gravity DC analysis           & Orientation / preprocessing & Distinguishes orientation from motion \\
+    Gravity DC analysis           & Orientation / preprocessing & Separates orientation from motion \\
     Inter-user Wasserstein        & Subject heterogeneity & Personalisation difficulty baseline \\
     \bottomrule
   \end{tabularx}
   \end{center}
 
-  \vspace{3mm}
-  \begin{block}{Practical Recommendation}
-    A complete domain shift characterisation in HAR requires \textbf{all four metric types} (covariate, prior, feature-space, subject-level). Reporting scalar Acc Magnitude shift alone is \textbf{insufficient} and systematically underestimates the true domain gap.
-  \end{block}
+  \vspace{1mm}
+  \begin{alertblock}{Practical Recommendation}
+    \small Reporting scalar Acc Magnitude shift alone is \textbf{insufficient} and underestimates the true domain gap by $5\times$.
+    A complete analysis requires \textbf{per-axis}, \textbf{prior}, \textbf{feature-space}, and \textbf{subject-level} metrics.
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}{Conclusions}
