@@ -14,6 +14,9 @@ human+activity+recognition+using+smartphones/**/*.Zone.Identifier
 human+activity+recognition+using+smartphones/__MACOSX/
 human+activity+recognition+using+smartphones/*.zip
 
+# Slide preview images (auto-generated)
+preview/
+
 # Python cache
 __pycache__/
 *.pyc
@@ -33,3 +36,7 @@ __MACOSX/
 # Editors
 .vscode/
 .idea/
+
+# Windows Zone.Identifier metadata files
+**/*.Zone.Identifier
+*:Zone.Identifier
