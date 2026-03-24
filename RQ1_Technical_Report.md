@@ -290,6 +290,52 @@ Autocorrelation and power spectral density analysis reveal differences in the te
 | Class Prior TVD | — | — | **0.4892** |
 | Multi-kernel MMD | — | — | **0.4547** |
 | Max inter-user Wasserstein | 1.891 m/s² | — | Exceeds cross-dataset |
+| **Jerk Std** | **6.711** | — | **4.65× higher in WISDM** |
+| **Residual Noise Std** | **2.021 m/s²** | — | **4.47× higher in WISDM** |
+| HF Energy Ratio (5–10 Hz) | — | — | 1.19× (WISDM > UCI) |
+
+---
+
+### 4.10 Source 8: Signal Noise Level
+
+A critical but often overlooked source of domain shift is the **difference in signal noise level** induced by incompatible preprocessing pipelines:
+
+- **UCI HAR** was preprocessed with a median filter followed by a 3rd-order Butterworth low-pass filter (20 Hz cutoff on the original 50 Hz signal) before being made available. This effectively suppresses sensor noise.
+- **WISDM** is entirely raw, with no noise filtering applied whatsoever.
+
+This is quantified using three metrics:
+
+![Noise Analysis](figures/noise_analysis.png)
+
+**Figure 11.** Signal noise characterisation. Top row: global distributions of Jerk Std, High-Frequency Energy Ratio, and Residual Noise Std. Bottom row: per-class breakdown and mean PSD comparison.
+
+| Noise Metric | WISDM | UCI HAR | Ratio |
+|---|---|---|---|
+| **Jerk Std** (mean, m/s³) | 8.549 | 1.838 | **4.65×** |
+| **Residual Noise Std** (mean, m/s²) | 2.603 | 0.582 | **4.47×** |
+| HF Energy Ratio [5–10 Hz] | 0.307 | 0.259 | 1.19× |
+| Jerk Wasserstein | 6.711 | — | — |
+| Residual Noise Wasserstein | 2.021 | — | — |
+
+**Per-activity residual noise (shared classes):**
+
+| Activity | WISDM | UCI HAR | Ratio |
+|---|---|---|---|
+| Walking | 2.52 m/s² | 1.02 m/s² | 2.47× |
+| Upstairs | 2.06 m/s² | 0.86 m/s² | 2.41× |
+| Downstairs | 2.29 m/s² | 1.19 m/s² | 1.93× |
+| Sitting | 0.054 m/s² | 0.027 m/s² | 2.00× |
+| Standing | 0.102 m/s² | 0.035 m/s² | 2.92× |
+
+**Key findings:**
+
+1. The PSD comparison (bottom-right panel) makes the noise gap visually unambiguous: above the 4 Hz LPF cutoff, UCI HAR power drops by 1–2 orders of magnitude relative to WISDM, which maintains elevated power through the entire 5–10 Hz band.
+
+2. Noise differences are **consistent across all activity classes** at ratios of 1.9–2.9×, confirming that the gap is driven by preprocessing differences rather than activity-specific dynamics.
+
+3. The High-Frequency Energy Ratio (1.19×) is the *smallest* of the three noise metrics — this is because the ratio is normalised by total energy. WISDM's high total energy (due to Jogging) partially masks the noise-band enrichment when measured as a proportion.
+
+4. **Implication for cross-dataset transfer:** A model trained on UCI HAR's smoothed signals will encounter WISDM's noisy raw signals at inference time. Any feature sensitive to signal roughness (e.g., high-frequency spectral features, zero-crossing rate, or signal derivatives) will degrade systematically.
 
 ---
 

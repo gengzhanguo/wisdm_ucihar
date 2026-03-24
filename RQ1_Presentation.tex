@@ -377,6 +377,22 @@
   \end{center}
 \end{frame}
 
+\begin{frame}{Results IX — Signal Noise Level}
+  \begin{center}
+    \includegraphics[width=0.90\textwidth, height=0.68\textheight, keepaspectratio]
+      {noise_analysis.png}
+  \end{center}
+  \vspace{-1mm}
+  \begin{center}
+    \small
+    \textbf{UCI HAR}: median + Butterworth LPF applied before release \quad
+    \textbf{WISDM}: raw, unfiltered \\[2pt]
+    Jerk Std \textbf{4.65$\times$} higher in WISDM ~·~
+    Residual Noise Std \textbf{4.47$\times$} higher ~·~
+    PSD diverges sharply above 4 Hz
+  \end{center}
+\end{frame}
+
 \begin{frame}{Results Summary — Comprehensive View}
   \begin{center}
     \includegraphics[width=0.90\textwidth, height=0.72\textheight, keepaspectratio]
@@ -443,6 +459,8 @@
         \item \textbf{Inter-subject variability} \\
               \small Max intra-dataset shift (1.89) $>$ cross-dataset (1.63)
         \vspace{1mm}
+        \item \textbf{Signal noise level} \\
+              \small Jerk 4.65$\times$, residual 4.47$\times$ higher in WISDM (unfiltered vs. Butterworth-filtered)
         \item \textbf{Sensor modality gap} \\
               \small UCI has gyroscope; WISDM accelerometer only
       \end{enumerate}
