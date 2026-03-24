@@ -1,6 +1,18 @@
-# Data files (too large for GitHub)
-WISDM_ar_latest/
-human+activity+recognition+using+smartphones/
+# ── Data: exclude unnecessary files ──────────────────────────────
+# WISDM: keep raw.txt and about/readme; exclude Windows metadata
+WISDM_ar_latest/**/*.Zone.Identifier
+WISDM_ar_latest/**/*.arff
+
+# UCI HAR: exclude pre-computed features (not used) and gyroscope signals
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/train/X_train.txt
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/test/X_test.txt
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/train/Inertial\ Signals/body_acc_*.txt
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/train/Inertial\ Signals/body_gyro_*.txt
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/test/Inertial\ Signals/body_acc_*.txt
+human+activity+recognition+using+smartphones/UCI\ HAR\ Dataset/test/Inertial\ Signals/body_gyro_*.txt
+human+activity+recognition+using+smartphones/**/*.Zone.Identifier
+human+activity+recognition+using+smartphones/__MACOSX/
+human+activity+recognition+using+smartphones/*.zip
 
 # Python cache
 __pycache__/

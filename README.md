@@ -65,12 +65,38 @@ python comprehensive_analysis.py
 
 ## Data
 
-- **WISDM v1.1**: Place `WISDM_ar_v1.1_raw.txt` under `WISDM_ar_latest/WISDM_ar_v1.1/`
-- **UCI HAR**: Unzip `UCI HAR Dataset.zip` under `human+activity+recognition+using+smartphones/`
+Both datasets are included in this repository (only the files required for this analysis).
 
-Data files are **not** included in this repository due to size. Download from:
-- WISDM: https://www.cis.fordham.edu/wisdm/dataset.php
-- UCI HAR: https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones
+### WISDM v1.1
+
+| Field | Detail |
+|---|---|
+| **Version** | WISDM Activity Recognition Dataset v1.1 |
+| **File included** | `WISDM_ar_latest/WISDM_ar_v1.1/WISDM_ar_v1.1_raw.txt` (48 MB) |
+| **Subjects** | 36 |
+| **Sampling rate** | 20 Hz |
+| **Sensor** | Tri-axial accelerometer (Android phone, front trouser pocket) |
+| **Activities** | Walking, Jogging, Upstairs, Downstairs, Sitting, Standing |
+| **Samples** | 1,098,207 raw rows |
+| **Original source** | https://www.cis.fordham.edu/wisdm/dataset.php |
+| **Citation** | Kwapisz et al. (2011), ACM SIGKDD Explorations, 12(2), 74–82 |
+
+> **Note:** The `.arff` transformed file and `.Zone.Identifier` Windows metadata files are excluded via `.gitignore`.
+
+### UCI HAR Dataset
+
+| Field | Detail |
+|---|---|
+| **Version** | UCI HAR Dataset (original, 2012) |
+| **Files included** | `total_acc_[xyz]_{train,test}.txt`, labels, subject IDs, README (see structure below) |
+| **Files excluded** | `X_train.txt` / `X_test.txt` (561 pre-computed features, not used), `body_acc_*`, `body_gyro_*` (not used in this analysis) |
+| **Subjects** | 30 |
+| **Sampling rate** | 50 Hz (resampled to 20 Hz in this analysis) |
+| **Sensor** | Tri-axial accelerometer + gyroscope (Samsung Galaxy S II, waist-mounted) |
+| **Activities** | Walking, Walking Upstairs, Walking Downstairs, Sitting, Standing, Laying |
+| **Windows** | 7,352 train + 2,947 test (128 samples @ 50 Hz = 2.56 s, 50% overlap) |
+| **Original source** | https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones |
+| **Citation** | Anguita et al. (2013), ESANN |
 
 ## References
 
