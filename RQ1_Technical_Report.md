@@ -1,6 +1,6 @@
 # Domain Shift in Human Activity Recognition: A Quantitative Analysis of WISDM and UCI HAR
 
-**Course:** CIS 7000
+**Course:** CIS 7000  
 **Topic:** Cross-Dataset Domain Shift Analysis  
 **Date:** March 2026
 
