@@ -60,3 +60,9 @@ results/hp_search_results.json
 .env
 venv/
 env/
+
+# Large UCI HAR pre-computed feature files (not used, >50 MB)
+data/ucihar/UCI HAR Dataset/train/X_train.txt
+data/ucihar/UCI HAR Dataset/test/X_test.txt
+data/ucihar/*.zip
+data/ucihar/UCI HAR Dataset.zip
