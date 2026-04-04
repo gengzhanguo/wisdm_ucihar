@@ -1,0 +1,100 @@
+{
+  "ffn": {
+    "model_kwargs": {
+      "hidden_dims": [
+        256,
+        128,
+        64
+      ],
+      "dropout": 0.16546313440034688
+    },
+    "train_kwargs": {
+      "lr": 0.0009591748488566899,
+      "weight_decay": 0.00100293123167809,
+      "label_smoothing": 0.15221218379954735,
+      "batch_size": 128
+    },
+    "wisdm_val_f1_search": 0.5568,
+    "wisdm_val_f1_final": 0.54574,
+    "wisdm_test_f1_final": 0.62277,
+    "n_params": 81797,
+    "best_epoch": 68
+  },
+  "cnn1d": {
+    "model_kwargs": {
+      "channels": [
+        32,
+        32,
+        32
+      ],
+      "dropout": 0.391641942262628
+    },
+    "train_kwargs": {
+      "lr": 0.0008583499202501803,
+      "weight_decay": 0.003661716025422656,
+      "label_smoothing": 0.13761149710856801,
+      "batch_size": 128
+    },
+    "wisdm_val_f1_search": 0.60863,
+    "wisdm_val_f1_final": 0.6071,
+    "wisdm_test_f1_final": 0.7616,
+    "n_params": 10277,
+    "best_epoch": 55
+  },
+  "bigru": {
+    "model_kwargs": {
+      "hidden_size": 80,
+      "num_layers": 1,
+      "dropout": 0.12877513242219973
+    },
+    "train_kwargs": {
+      "lr": 0.0004906957978781586,
+      "weight_decay": 3.7728668487028e-05,
+      "label_smoothing": 0.021718410860069166,
+      "batch_size": 64
+    },
+    "wisdm_val_f1_search": 0.5523,
+    "wisdm_val_f1_final": 0.48491,
+    "wisdm_test_f1_final": 0.55885,
+    "n_params": 51429,
+    "best_epoch": 44
+  },
+  "tcn": {
+    "model_kwargs": {
+      "n_channels": 56,
+      "kernel_size": 3,
+      "dropout": 0.2294961261317829
+    },
+    "train_kwargs": {
+      "lr": 0.00177846113842052,
+      "weight_decay": 2.345647649759488e-05,
+      "label_smoothing": 0.10836134622583429,
+      "batch_size": 256
+    },
+    "wisdm_val_f1_search": 0.61155,
+    "wisdm_val_f1_final": 0.6085,
+    "wisdm_test_f1_final": 0.69765,
+    "n_params": 67709,
+    "best_epoch": 44
+  },
+  "transformer": {
+    "model_kwargs": {
+      "d_model": 64,
+      "nhead": 2,
+      "num_layers": 1,
+      "dim_feedforward": 512,
+      "dropout": 0.12900908479202913
+    },
+    "train_kwargs": {
+      "lr": 0.0049073059386216,
+      "weight_decay": 8.18837077133341e-05,
+      "label_smoothing": 0.03658529096739428,
+      "batch_size": 64
+    },
+    "wisdm_val_f1_search": 0.50453,
+    "wisdm_val_f1_final": 0.48922,
+    "wisdm_test_f1_final": 0.52813,
+    "n_params": 83589,
+    "best_epoch": 87
+  }
+}

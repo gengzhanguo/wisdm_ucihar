@@ -40,3 +40,23 @@ __MACOSX/
 # Windows Zone.Identifier metadata files
 **/*.Zone.Identifier
 *:Zone.Identifier
+
+# TensorBoard event files (large binary)
+results/runs/
+results_final/runs/
+
+# Model checkpoints (large binary)
+results/checkpoints/
+results_final/viz_checkpoints/
+
+# Training logs
+results/*.log
+results_final/*.log
+
+# Intermediate HP search artifacts (keep JSONs, skip large results)
+results/hp_search_results.json
+
+# Python env
+.env
+venv/
+env/
