@@ -1,0 +1,291 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in, top=0.9in, bottom=0.9in]{geometry}
+\usepackage{newtxtext}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[colorlinks=false, hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+
+% Colors
+\definecolor{pennblue}{HTML}{011F5B}
+\definecolor{pennred}{HTML}{990000}
+\definecolor{lightgray}{HTML}{F5F5F5}
+\definecolor{slidegray}{HTML}{DDDDDD}
+
+% Header / Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{pennblue}\textbf{Cross-Dataset HAR Transfer} — Speaking Script}
+\fancyhead[R]{\small\color{pennblue}Gengzhan · Forest · Gengzhan}
+\fancyfoot[C]{\small\thepage}
+
+% Section styling — slide labels
+\newcommand{\slidetitle}[1]{%
+  \vspace{14pt}%
+  \noindent\colorbox{pennblue}{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \strut\bfseries\color{white}\quad #1\strut}}%
+  \vspace{4pt}\par
+}
+
+% Subsection styling — timing label
+\newcommand{\timing}[1]{%
+  \noindent{\small\bfseries\color{pennred}#1}\quad\par\vspace{2pt}%
+}
+
+% Slide box environment
+\newmdenv[
+  backgroundcolor=lightgray,
+  linecolor=slidegray,
+  linewidth=1pt,
+  leftmargin=0pt,
+  rightmargin=0pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=4pt,
+  skipbelow=8pt
+]{slidebox}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\begin{document}
+
+% =========================================================
+% Title block
+% =========================================================
+\begin{center}
+  {\LARGE\bfseries\color{pennblue} Speaking Script}\\[4pt]
+  {\large Physics-Grounded Data Augmentation Outperforms Model Adaptation\\
+  for Cross-Dataset HAR Transfer}\\[8pt]
+  {\normalsize Gengzhan \quad Forest \quad Gengzhan\\
+  University of Pennsylvania \quad April 2026}\\[4pt]
+  \textcolor{pennred}{\rule{\textwidth}{1.5pt}}\\[2pt]
+  {\small Total duration: \textbf{7 minutes} \quad Pace: $\sim$140 words/min}
+\end{center}
+
+\vspace{6pt}
+
+% =========================================================
+\slidetitle{Slide 1 \ — \ Title}
+% =========================================================
+\timing{[0:00 – 0:15]}
+
+Hi everyone. We're going to talk about a practical problem in human activity
+recognition --- what happens when you train a model on one dataset and try to
+deploy it on another. Spoiler: it usually fails badly, and we wanted to understand why.
+
+% =========================================================
+\slidetitle{Slide 2 \ — \ Motivation}
+% =========================================================
+\timing{[0:15 – 1:00]}
+
+So here's the concrete problem. We took UCI~HAR as the source --- that's
+the standard waist-mounted sensor dataset --- and tried to run it on WISDM,
+which is collected from phones in people's front pockets.
+
+The result: macro F1 of 0.085. That's basically random chance for a 5-class problem.
+
+And this isn't a model quality issue. The same CNN that achieves 95\% on
+UCI~HAR completely collapses on WISDM. So the question we asked was:
+is this domain shift, and if so, what kind?
+
+% =========================================================
+\slidetitle{Slide 3 \ — \ Two Datasets}
+% =========================================================
+\timing{[1:00 – 1:30]}
+
+These two datasets look similar on the surface --- same activities, same
+accelerometer, roughly similar size. But when you look closely, they're actually
+quite different.
+
+UCI~HAR is waist-mounted, 50~Hz, and Butterworth low-pass filtered before
+release. WISDM is front-pocket, 20~Hz, completely raw.
+
+After physical alignment --- resampling to 20~Hz, converting units, matching
+window size --- both datasets give us 51$\times$3 windows.
+But the distributions are still very different.
+
+% =========================================================
+\slidetitle{Slide 4 \ — \ Seven Sources of Domain Shift}
+% =========================================================
+\timing{[1:30 – 2:00]}
+
+We identified seven sources of domain shift. I'll go through the top ones.
+
+The dominant source --- and it's not even close --- is gravity axis projection.
+Wasserstein distance of \textbf{8.7~m/s$^2$} on the X-axis alone.
+That number is basically the entire gravity vector.
+
+The other sources --- amplitude differences, noise structure, class prior shift
+--- they all matter, but they're secondary.
+
+% =========================================================
+\slidetitle{Slide 5 \ — \ Dominant Shift: Gravity Axis Projection}
+% =========================================================
+\timing{[2:00 – 3:00]}
+\begin{slidebox}
+\textcolor{pennred}{\textbf{Key slide. Take your time here.}}
+\end{slidebox}
+
+Here's why gravity dominates. In UCI~HAR, the sensor is strapped to the
+waist pointing forward. Gravity falls almost entirely along the X-axis ---
+mean around $+8.58$~m/s$^2$.
+
+In WISDM, the phone is in your front pocket, free to rotate. Gravity ends up
+on the Y-axis, with a lower mean of about $+6.51$~m/s$^2$.
+
+So when a model trains on UCI~HAR, it learns: ``X has a big DC component ---
+that's the gravity signal, that's how I tell walking from standing.'' Then on
+WISDM, X is near zero-mean. The gravity cue the model learned is just gone.
+
+This isn't a subtle distribution shift. The sensor is physically rotated
+roughly 90 degrees.
+
+% =========================================================
+\slidetitle{Slide 6 \ — \ Feature Space Gap}
+% =========================================================
+\timing{[3:00 – 3:30]}
+
+This shows up dramatically in feature space. Before any adaptation, the
+multi-kernel MMD between UCI~HAR and WISDM is \textbf{0.830}.
+
+Looking at the PCA projection --- the two datasets are almost completely
+disjoint. A model trained on the red cluster genuinely cannot generalize to
+the green cluster.
+
+% =========================================================
+\slidetitle{Slide 7 \ — \ PhysicalDistortion Pipeline}
+% =========================================================
+\timing{[3:30 – 4:30]}
+\begin{slidebox}
+\textcolor{pennred}{\textbf{Key slide. Walk through each operator clearly.}}
+\end{slidebox}
+
+So our approach was: instead of adapting the model, correct the data.
+
+We built a five-operator pipeline called \textbf{PhysicalDistortion} that
+transforms UCI~HAR training windows to look like they came from a
+front-pocket sensor.
+
+\textbf{First}, we apply a 90-degree rotation around the Z-axis, plus some
+random wobble to simulate loose pocket placement.
+
+\textbf{Second}, we scale down the gravity component --- 7.29 over 9.69,
+which is the empirically measured ratio.
+
+\textbf{Third} --- and this is important --- we apply per-activity, per-axis
+amplitude scaling. Not a global scale factor. The ratio for Sitting Y-axis is
+4.82$\times$, for Walking Y-axis it's 2.06$\times$. A global scale factor
+would get this very wrong.
+
+\textbf{Fourth}, we boost the 0.8 to 2~Hz gait frequency band for locomotion
+activities. WISDM has about 40\% more energy there because it's unfiltered.
+
+\textbf{Fifth}, we inject temporally correlated noise --- AR(1) with
+coefficient 0.9865 --- because UCI~HAR noise is white after filtering, but
+WISDM noise has strong temporal correlation.
+
+Each operator targets a specific, measured physical difference.
+No target labels needed.
+
+% =========================================================
+\slidetitle{Slide 8 \ — \ After PhysicalDistortion: Distributions Align}
+% =========================================================
+\timing{[4:30 – 5:00]}
+
+After PhysicalDistortion, the MMD drops from 0.830 to 0.453 ---
+a \textbf{45\% reduction}.
+
+You can see in the PCA plot that the augmented UCI data now partially overlaps
+with WISDM. The gap is substantially smaller.
+
+Not gone --- that remaining gap is probably why some per-class results are
+still imperfect.
+
+% =========================================================
+\slidetitle{Slide 9 \ — \ Ablation Results}
+% =========================================================
+\timing{[5:00 – 5:30]}
+
+Here's the main ablation. Four conditions across five architectures.
+
+C0~Raw is basically non-functional --- average F1 of 0.085. CNN1D with
+PhysicalDistortion alone reaches \textbf{0.723}. That's a 6$\times$ improvement
+for CNN1D, and 6.8$\times$ on average across all five architectures.
+
+The interesting finding: adding TTBN or DANN on top of PhysicalDistortion
+\emph{actually hurts}. Every single model gets worse when you add model-level
+adaptation on top of good data augmentation.
+
+% =========================================================
+\slidetitle{Slide 10 \ — \ Per-class Analysis: Honest Look}
+% =========================================================
+\timing{[5:30 – 6:00]}
+
+Looking at per-class performance, the picture is uneven. Sitting at 0.966,
+Standing at 0.820, Walking at 0.872 --- these are all solid.
+
+But Upstairs is \textbf{0.445}. That's genuinely bad. Stair climbing produces
+a complicated signal with both periodic and aperiodic components, and the
+inter-subject variability in how people climb stairs is large.
+Window-level augmentation can't model step-to-step variability.
+We don't have a good solution for this.
+
+% =========================================================
+\slidetitle{Slide 11 \ — \ Why TTBN and DANN Don't Help}
+% =========================================================
+\timing{[6:00 – 6:20]}
+
+Very briefly --- after PhysicalDistortion, TTBN re-estimates batch norm
+statistics from the test batch, but WISDM is 56\% Walking versus UCI's 20\%.
+The re-estimated statistics get skewed by the class imbalance.
+
+DANN tries to force domain-invariant features, but the shift is tied to the
+activity itself --- gravity projection changes per activity. Forcing invariance
+destroys the axis-specific information the classifier actually needs.
+
+% =========================================================
+\slidetitle{Slide 12 \ — \ Lessons Learned}
+% =========================================================
+\timing{[6:20 – 6:45]}
+
+Three takeaways.
+
+\textbf{One}: diagnose before adapting. We spent time measuring the shift
+before building anything, and that directly told us what to fix.
+
+\textbf{Two}: physical corrections beat model corrections here. The root cause
+was in the data, so fixing the data worked better than fixing the model.
+
+\textbf{Three}: model adaptation made things worse when added on top of good
+augmentation. The combination is not always additive.
+
+% =========================================================
+\slidetitle{Slide 13 \ — \ Conclusion}
+% =========================================================
+\timing{[6:45 – 7:00]}
+
+To wrap up: the dominant source of cross-dataset failure between UCI~HAR and
+WISDM is gravity axis projection --- a purely physical difference in sensor
+placement.
+
+PhysicalDistortion corrects for this without any target labels, taking CNN1D
+from F1~0.120 to \textbf{0.723}. The lesson is simple: fix the physics first.
+Then think about the model.
+
+Thanks --- happy to take questions.
+
+\vspace{12pt}
+\textcolor{pennred}{\rule{\textwidth}{1.5pt}}
+\begin{center}
+\small\color{gray}
+\textit{End of script. Total: $\approx$7:00 at 140 words/min.}
+\end{center}
+
+\end{document}
