@@ -96,28 +96,27 @@ Rank & Source & Magnitude \\
 \end{frame}
 
 % ---- Slide 5: Dominant Shift - Gravity Axis ----
-\begin{frame}{Dominant Shift: Gravity Axis Projection}
+\begin{frame}[shrink=8]{Dominant Shift: Gravity Axis Projection}
 
 \begin{columns}[T]
-\begin{column}{0.5\textwidth}
+\begin{column}{0.52\textwidth}
 \includegraphics[width=\textwidth]{figures/per_axis_analysis.png}
 \end{column}
-\begin{column}{0.45\textwidth}
+\begin{column}{0.44\textwidth}
 \textbf{What's happening:}
 \begin{itemize}
-    \item Waist mount: gravity falls along \textbf{X-axis}\\
+    \item Waist mount: gravity $\to$ \textbf{X-axis}\\
     Mean $= +8.58$\,m/s$^2$
-    \item Front pocket: gravity falls along \textbf{Y-axis}\\
+    \item Front pocket: gravity $\to$ \textbf{Y-axis}\\
     Mean $= +6.51$\,m/s$^2$
-    \item X-axis Wasserstein $= \mathbf{8.7}$\,m/s$^2$
+    \item X-axis $W_1 = \mathbf{8.7}$\,m/s$^2$
 \end{itemize}
 
-\bigskip
-This is not a subtle shift. \\
-The sensor is physically rotated $\sim 90^\circ$.
+\smallskip
+Sensor is physically rotated ${\sim}90^\circ$.
 
-\bigskip
-A model trained on UCI HAR learns that ``X has a big DC component.'' In WISDM, X is nearly zero-mean.
+\smallskip
+A model trained on UCI HAR learns ``X has big DC.'' In WISDM, X is near zero-mean. This is why raw transfer fails.
 \end{column}
 \end{columns}
 
@@ -127,15 +126,11 @@ A model trained on UCI HAR learns that ``X has a big DC component.'' In WISDM, X
 \begin{frame}{How Bad Is the Gap in Feature Space?}
 
 \begin{center}
-\includegraphics[width=0.82\textwidth]{figures/latent_space_overlap.png}
+\includegraphics[width=0.92\textwidth]{figures/latent_space_overlap.png}
 \end{center}
 
-\medskip
-\textbf{Multi-kernel MMD = 0.830} (before any adaptation)
-
 \smallskip
-The two datasets barely overlap in feature space.\\
-A classifier trained on UCI HAR has no chance on WISDM as-is.
+\textbf{Multi-kernel MMD = 0.830} \quad Two datasets barely overlap. Raw transfer has no chance.
 
 \end{frame}
 
@@ -165,15 +160,11 @@ No target labels used. No model architecture changes.
 \begin{frame}{After PhysicalDistortion: Distributions Align}
 
 \begin{center}
-\includegraphics[width=0.82\textwidth]{figures/distribution_alignment.png}
+\includegraphics[width=0.92\textwidth]{figures/distribution_alignment.png}
 \end{center}
 
-\medskip
-\textbf{MMD: $0.830 \rightarrow 0.453$} \quad (45.4\% reduction)
-
 \smallskip
-The gap is substantially smaller, but not gone.\\
-The remaining gap likely explains why some classes are still hard.
+\textbf{MMD: $0.830 \rightarrow 0.453$} \quad (45.4\% reduction) \quad Gap shrinks but doesn't close — explains remaining per-class failures.
 
 \end{frame}
 
