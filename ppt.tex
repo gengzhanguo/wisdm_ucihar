@@ -212,7 +212,7 @@ Average     & 0.085 & \textbf{0.578} & 0.516 & 0.418 \\
 
 \begin{columns}[T]
 \begin{column}{0.52\textwidth}
-\includegraphics[width=\textwidth]{figures/radar_charts.png}
+\includegraphics[width=0.95\textwidth]{figures/radar_charts.png}
 \end{column}
 \begin{column}{0.44\textwidth}
 \textbf{CNN1D, C1 condition:}
@@ -240,11 +240,11 @@ Step patterns vary a lot across subjects and sensor wobble is hard to correct at
 \end{frame}
 
 % ---- Slide 11: Why TTBN/DANN Don't Help ----
-\begin{frame}{Why TTBN and DANN Don't Help}
+\begin{frame}[shrink=12]{Why TTBN and DANN Don't Help}
 
 \textbf{After PhysicalDistortion, model-level adaptation makes things worse.}
 
-\bigskip
+\medskip
 \textbf{TTBN fails because:}
 \begin{itemize}
     \item Re-estimates BN stats from test batches
@@ -252,7 +252,7 @@ Step patterns vary a lot across subjects and sensor wobble is hard to correct at
     \item Small test batches give noisy estimates that push stats in wrong direction
 \end{itemize}
 
-\medskip
+\smallskip
 \textbf{DANN fails because:}
 \begin{itemize}
     \item Forces domain-invariant features
@@ -261,14 +261,14 @@ Step patterns vary a lot across subjects and sensor wobble is hard to correct at
     \item Training is also unstable; adversarial loss weight is hard to tune
 \end{itemize}
 
-\medskip
+\smallskip
 \textbf{Key insight:} When shift is physical and correctable, correct it first. \\
 Model-level methods assume there's something left to adapt.
 
 \end{frame}
 
 % ---- Slide 12: Lessons Learned ----
-\begin{frame}{Lessons Learned}
+\begin{frame}[shrink=5]{Lessons Learned}
 
 \begin{enumerate}
     \item \textbf{Diagnose before adapting.} Understanding \emph{why} distributions differ is more valuable than applying a generic adaptation method. Here, 90\% of the shift traces to sensor placement geometry.
@@ -296,7 +296,7 @@ Physical differences between sensor setups drive cross-dataset HAR failure more 
 \textbf{Numbers:}
 \begin{itemize}
     \item Baseline (no adaptation): F1 = 0.085
-    \item PhysicalDistortion: \textbf{F1 = 0.723} ($6\times$ improvement)
+    \item PhysicalDistortion: \textbf{F1 = 0.723} ($6.0\times$ for CNN1D; $6.8\times$ avg)
     \item After HP search: \textbf{F1 = 0.762} (10{,}277-param CNN1D)
     \item TTBN/DANN on top: F1 drops to 0.610 / 0.581
     \item MMD: $0.830 \rightarrow 0.453$ (45\% reduction)

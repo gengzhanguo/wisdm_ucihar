@@ -25,7 +25,7 @@ for Cross-Dataset HAR Transfer}}
 \maketitle
 
 \begin{abstract}
-Human activity recognition (HAR) models trained on one dataset routinely fail when deployed on data from a different sensor setup. We study this problem using UCI HAR (waist-mounted, 50\,Hz, filtered) as source and WISDM~v1.1 (front-pocket, 20\,Hz, raw) as target, with no access to target labels during training. We characterize seven distinct sources of domain shift, the dominant one being a gravity-axis projection mismatch with an X-axis Wasserstein distance of 8.7\,m/s$^2$. To address this, we propose \textbf{PhysicalDistortion}, a five-operator data augmentation pipeline grounded in the physical differences between sensor placements. Without it, a CNN1D model achieves macro F1 of 0.120 on the WISDM test set. With PhysicalDistortion, the same model reaches F1 of 0.723—a $6\times$ improvement. Multi-kernel MMD drops from 0.830 to 0.453 (45\% reduction). Two standard model-level adaptation methods, test-time batch normalization (TTBN) and DANN, both \emph{hurt} performance compared to PhysicalDistortion alone, suggesting that physical alignment should precede any feature-level adaptation. Our best result after hyperparameter search is F1 = 0.762 with a 10{,}277-parameter CNN1D, though per-class results remain uneven: Upstairs F1 is only 0.445, indicating that stair-related activities remain hard.
+Human activity recognition (HAR) models trained on one dataset routinely fail when deployed on data from a different sensor setup. We study this problem using UCI HAR (waist-mounted, 50\,Hz, filtered) as source and WISDM~v1.1 (front-pocket, 20\,Hz, raw) as target, with no access to target labels during training. We characterize seven distinct sources of domain shift, the dominant one being a gravity-axis projection mismatch with an X-axis Wasserstein distance of 8.7\,m/s$^2$. To address this, we propose \textbf{PhysicalDistortion}, a five-operator data augmentation pipeline grounded in the physical differences between sensor placements. Without it, a CNN1D model achieves macro F1 of 0.120 on the WISDM test set. With PhysicalDistortion, the same model reaches F1 of 0.723—a $6.0\times$ improvement for CNN1D (and $6.8\times$ on average across five architectures). Multi-kernel MMD drops from 0.830 to 0.453 (45\% reduction). Two standard model-level adaptation methods, test-time batch normalization (TTBN) and DANN, both \emph{hurt} performance compared to PhysicalDistortion alone, suggesting that physical alignment should precede any feature-level adaptation. Our best result after hyperparameter search is F1 = 0.762 with a 10{,}277-parameter CNN1D, though per-class results remain uneven: Upstairs F1 is only 0.445, indicating that stair-related activities remain hard.
 \end{abstract}
 
 \section{Introduction}
@@ -38,7 +38,7 @@ We take a different angle. We first ask what, physically, causes the domain shif
 
 \section{Related Work}
 
-Domain adaptation for HAR has been studied from multiple angles. \citet{wang2018stratified} proposed stratified transfer learning to handle cross-subject and cross-device shifts. \citet{chen2019cross} applied adversarial alignment specifically to wearable HAR. \citet{wilson2020multi} studied multi-source domain adaptation across HAR benchmarks. On the data augmentation side, \citet{um2017data} showed that simple transformations (scaling, jitter, permutation) help sensor-based HAR, though they did not target cross-dataset shift explicitly. \citet{sagawa2019distributionally} and \citet{sun2016deep} provide theoretical grounding for distribution alignment.
+Domain adaptation for HAR has been studied from multiple angles. \citet{wang2018stratified} proposed stratified transfer learning to handle cross-subject and cross-device shifts, but their method assumes access to labeled source sub-populations that can be matched to the target—an assumption that does not hold when the shift is primarily due to sensor geometry. \citet{chen2019cross} applied adversarial alignment to wearable HAR. \citet{wilson2020multi} studied multi-source domain adaptation across HAR benchmarks. On the data augmentation side, \citet{um2017data} showed that simple transformations (scaling, jitter, permutation) help sensor-based HAR, though they did not target cross-dataset shift explicitly. \citet{sagawa2019distributionally} and \citet{sun2016deep} provide theoretical grounding for distribution alignment.
 
 Our work is closest in spirit to \citet{mathur2021unsupervised}, who also argued that sensor-level physical differences are a key source of shift. We differ in that we explicitly derive augmentation parameters from empirical statistics of the two datasets rather than learning them.
 
@@ -89,7 +89,7 @@ UCI HAR noise is approximately white after filtering. WISDM noise has strong tem
 \begin{equation}
     \alpha = 1 - \frac{1}{2}\left(\frac{\sigma_{\text{jerk}}}{\sigma_a \cdot f_s}\right)^2 \approx 0.9865
 \end{equation}
-We inject AR(1) noise initialized from the stationary distribution: $\epsilon_0 \sim \mathcal{N}(0, \sigma^2/(1-\alpha^2))$, then $\epsilon_t = \alpha \epsilon_{t-1} + (1-\alpha^2)^{1/2} \sigma_a \xi_t$.
+We inject AR(1) noise initialized from the stationary distribution: $\epsilon_0 \sim \mathcal{N}(0, \sigma_a^2)$, then $\epsilon_t = \alpha \epsilon_{t-1} + (1-\alpha^2)^{1/2} \sigma_a \xi_t$.
 
 \subsection{Baselines: TTBN and DANN}
 
@@ -113,7 +113,7 @@ We evaluate four conditions:
     \item \textbf{C3 +DANN}: C1 + domain-adversarial training with unlabeled WISDM.
 \end{itemize}
 
-For hyperparameter search, we run 50 trials of random search on CNN1D over: channel widths $\{16, 32, 64\}$, dropout $[0.1, 0.5]$, label smoothing $[0.0, 0.2]$, learning rate $[10^{-4}, 10^{-2}]$ (log-uniform), weight decay $[10^{-4}, 10^{-2}]$ (log-uniform), batch size $\{64, 128, 256\}$. We report macro F1 on the WISDM test set (no validation on WISDM—the full test set is used for evaluation only). All experiments use AdamW, 50 epochs, cosine LR schedule.
+For hyperparameter search, we run 40 trials of random search on CNN1D over: channel widths $\{16, 32, 64\}$, dropout $[0.1, 0.5]$, label smoothing $[0.0, 0.2]$, learning rate $[10^{-4}, 10^{-2}]$ (log-uniform), weight decay $[10^{-4}, 10^{-2}]$ (log-uniform), batch size $\{64, 128, 256\}$. Trial selection uses macro F1 on a held-out WISDM validation split (WISDM-Val); this constitutes weak-form target-domain access, since hyperparameter choice is guided by target-domain performance even though no target labels are used during model training. The final evaluation numbers reported throughout this paper use the WISDM test set, which is disjoint from WISDM-Val. All experiments use AdamW, 50 epochs, cosine LR schedule.
 
 \section{Results}
 
@@ -173,7 +173,7 @@ Per-class F1 for CNN1D under C1 (Figure~\ref{fig:radar}): Walking 0.872, Upstair
 
 \subsection{Hyperparameter Search}
 
-The best CNN1D configuration found by random search (50 trials): channels = (32, 32, 32), 10{,}277 parameters, dropout = 0.39, label smoothing = 0.14, lr = $9 \times 10^{-4}$, weight decay = $4 \times 10^{-3}$, batch size = 128. This achieves F1 = 0.762 on the WISDM test set—an improvement over the default-hyperparameter CNN1D (F1 = 0.723). Notably, a larger model did not help; the best model is relatively small.
+The best CNN1D configuration found by random search (40 trials): channels = (32, 32, 32), 10{,}277 parameters, dropout = 0.39, label smoothing = 0.14, lr = $9 \times 10^{-4}$, weight decay = $4 \times 10^{-3}$, batch size = 128. This achieves F1 = 0.762 on the WISDM test set—an improvement over the default-hyperparameter CNN1D (F1 = 0.723). A larger model did not help; the best configuration is relatively small at 10,277 parameters.
 
 \section{Discussion}
 
@@ -197,7 +197,7 @@ We should be clear about what the 0.723 F1 does not mean. Upstairs F1 = 0.445 is
 
 More generally, inter-subject variability is a real problem we did not solve. The Wasserstein distance across subjects within WISDM reaches 1.891\,m/s$^2$ for some axes, which is non-trivial. Our PhysicalDistortion pipeline is calibrated to the dataset-level mean difference, not to individual subjects. A proper solution would likely require subject-level adaptation, which needs target labels.
 
-The evaluation setup is also limited: we use the full WISDM test set for evaluation after selecting hyperparameters, which means the reported numbers are somewhat optimistic. We do not have a held-out test set.
+The evaluation setup is also limited: hyperparameter selection was guided by macro F1 on WISDM-Val (a held-out WISDM validation split belonging to the target domain). This means the HP-search result of F1 = 0.762 is somewhat optimistic—the selected configuration is tuned toward the target distribution rather than chosen blindly. A truly deployment-blind evaluation would require holding out WISDM entirely from the HP selection process, which we did not do.
 
 \section{Conclusion}
 
