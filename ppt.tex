@@ -1,16 +1,27 @@
 \documentclass{beamer}
-\usetheme{Madrid}
-\usecolortheme{default}
+\usetheme{Warsaw}
+\usecolortheme{penn}
+
+% Penn official colors: Blue #011F5B, Red #990000
+% beamercolorthemepenn.sty loaded from CTAN (beamertheme-upenn-bc package)
 
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{xcolor}
 
+% Penn blue for blocks and alerts
+\definecolor{pennblue}{HTML}{011F5B}
+\definecolor{pennred}{HTML}{990000}
+
+\setbeamercolor{alerted text}{fg=pennred}
+\setbeamercolor{block title}{bg=pennblue, fg=white}
+\setbeamercolor{block body}{bg=pennblue!8, fg=black}
+
 \title[Cross-Dataset HAR Transfer]{Physics-Grounded Data Augmentation\\Outperforms Model Adaptation\\for Cross-Dataset HAR Transfer}
 
 \author{Gengzhan}
-\institute{Course Project}
+\institute{University of Pennsylvania}
 \date{April 2026}
 
 \begin{document}
