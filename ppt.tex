@@ -180,8 +180,18 @@ No target labels used. No model architecture changes.
 \end{frame}
 
 % ---- Slide 9: Ablation Results ----
-\begin{frame}{Ablation: Four Conditions, Five Architectures}
+\begin{frame}[shrink=5]{Ablation: Four Conditions, Five Architectures}
 
+{\footnotesize
+\begin{tabular}{@{}ll@{\quad}ll@{}}
+  \textbf{C0} & Raw UCI HAR, no adaptation &
+  \textbf{C2} & C1 + Test-Time Batch Norm (TTBN) \\
+  \textbf{C1} & UCI HAR + PhysicalDistortion &
+  \textbf{C3} & C1 + Domain-Adversarial Training (DANN) \\
+\end{tabular}
+}
+
+\smallskip
 \begin{table}
 \centering
 \small

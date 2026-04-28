@@ -123,7 +123,12 @@ Table~\ref{tab:ablation} shows macro F1 across all conditions and architectures.
 
 \begin{table}[htbp]
 \centering
-\caption{Macro F1 on WISDM test set under four conditions. C1 (PhysicalDistortion) gives the best results across all architectures.}
+\caption{Macro F1 on WISDM test set under four conditions.
+\textbf{C0}: raw UCI HAR, no adaptation.
+\textbf{C1}: UCI HAR with PhysicalDistortion augmentation.
+\textbf{C2}: C1 + test-time batch normalization (TTBN).
+\textbf{C3}: C1 + domain-adversarial training (DANN).
+C1 gives the best results across all five architectures.}
 \label{tab:ablation}
 \begin{tabular}{lcccc}
 \toprule
